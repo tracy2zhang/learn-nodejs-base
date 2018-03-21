@@ -8,3 +8,4 @@ console.log(mod1.obj.url);
 mod1.logUrl();
 mod1.logUrl = 1;
 console.log(mod1);
+console.log(chalk.green(mod2));
