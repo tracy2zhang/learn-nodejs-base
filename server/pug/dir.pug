@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+    title= title
+    link(rel="stylesheet", href="https://cdn.bootcss.com/semantic-ui/2.3.1/semantic.min.css")
+    style.
+      .container {
+        padding: 20px 10px;
+        box-sizing: border-box;
+      }
+  body
+    .ui.container
+      .ui.horizontal.list
+        if !isRoot
+          a.item(href='javascript:history.back(-1)')
+            i.icon.folder.orange
+            .content
+              .header= '. .'
+        each file in files
+          a.item(href=`${file}`)
+            - var isFile = file.indexOf('.') >= 0
+            - var iconClass = isFile ? 'file blue' : 'folder orange'
+            i.icon(class=iconClass)
+            .content
+              .header= path.basename(file)
+      
