@@ -11,9 +11,12 @@ html(lang="en")
         padding: 20px 10px;
         box-sizing: border-box;
       }
+      .ui.list .list>.item, .ui.list>.item, ol.ui.list li, ul.ui.list li {
+        padding: .3em 0;
+      }
   body
     .ui.container
-      .ui.horizontal.list
+      .ui.list
         if !isRoot
           a.item(href='javascript:history.back(-1)')
             i.icon.folder.orange

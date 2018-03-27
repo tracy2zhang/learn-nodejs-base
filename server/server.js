@@ -41,7 +41,7 @@ const server = http.createServer(async (req, res) => {
       const files = await readdir(filePath)
       res.end(dirTemplate({
         title: isRoot ? 'index' : path.basename(url),
-        files: files.map(file => path.join(url, file)),
+        files: files.map(file => path.join(url, file)).sort((f1, f2) => f1.indexOf('.') - f2.indexOf('.')),
         isRoot,
         path
       }))
