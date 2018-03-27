@@ -9,6 +9,7 @@ const pug = require('pug')
 const stat = promisify(fs.stat)
 const readdir = promisify(fs.readdir)
 const { port, host, staticPath } = require('./config')
+const { compress } = require('./compress')
 
 function getIpAddress (network) {
   for (let key of Object.keys(network)) {
@@ -34,10 +35,15 @@ const server = http.createServer(async (req, res) => {
     const fstat = await stat(filePath)
     res.statusCode = 200
     if (fstat.isFile()) {
-      res.setHeader('content-type', mime.getType(filePath))
-      fs.createReadStream(filePath).pipe(res)
+      const mimeType = mime.getType(filePath)
+      let rs = fs.createReadStream(filePath)
+      if (mimeType.startsWith('text') || mimeType.startsWith('application')) {
+        rs = compress(rs, req, res)
+      }
+      res.setHeader('content-type', `${mimeType};charset=UTF-8`)
+      rs.pipe(res)
     } else if (fstat.isDirectory()) {
-      res.setHeader('content-type', 'text/html')
+      res.setHeader('content-type', 'text/html;charset=UTF-8')
       const files = await readdir(filePath)
       res.end(dirTemplate({
         title: isRoot ? 'index' : path.basename(url),
@@ -49,7 +55,7 @@ const server = http.createServer(async (req, res) => {
   } catch (err) {
     console.error(chalk.red(err))
     res.statusCode = 404
-    res.setHeader('content-type', 'text/html')
+    res.setHeader('content-type', 'text/html;charset=UTF-8')
     // fs.createReadStream(path.join(__dirname, '404.html')).pipe(res)
     res.end(notFoundTemplate({ errMsg: err.toString() }))
   }
