@@ -10,6 +10,7 @@ const stat = promisify(fs.stat)
 const readdir = promisify(fs.readdir)
 const { port, host, staticPath } = require('./config')
 const { compress } = require('./compress')
+const { range } = require('./range')
 
 function getIpAddress (network) {
   for (let key of Object.keys(network)) {
@@ -36,7 +37,19 @@ const server = http.createServer(async (req, res) => {
     res.statusCode = 200
     if (fstat.isFile()) {
       const mimeType = mime.getType(filePath)
-      let rs = fs.createReadStream(filePath)
+      const total = fstat.size
+      const { statusCode, start, end } = range(total, req, res)
+      res.statusCode = statusCode
+      if (statusCode === 416) {
+        res.end('Requested Range Not Satisfiable')
+        return
+      }
+      let rs
+      if (statusCode === 206) {
+        rs = fs.createReadStream(filePath, { start, end })
+      } else {
+        rs = fs.createReadStream(filePath)
+      }
       if (mimeType.startsWith('text') || mimeType.startsWith('application')) {
         rs = compress(rs, req, res)
       }
