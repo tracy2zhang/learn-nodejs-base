@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.3.2",
+    "etag": "^1.8.1",
     "mime": "^2.2.0",
     "pug": "^2.0.3"
   },

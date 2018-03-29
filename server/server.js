@@ -11,6 +11,7 @@ const readdir = promisify(fs.readdir)
 const { port, host, staticPath } = require('./config')
 const { compress } = require('./compress')
 const { range } = require('./range')
+const { hitCache } = require('./cache')
 
 function getIpAddress (network) {
   for (let key of Object.keys(network)) {
@@ -34,10 +35,17 @@ const server = http.createServer(async (req, res) => {
     const isRoot = url === '/'
     const filePath = path.join(__dirname, staticPath, url)
     const fstat = await stat(filePath)
+    // 判断缓存
+    if (hitCache(fstat, req, res)) {
+      res.statusCode = 304
+      res.end()
+      return
+    }
     res.statusCode = 200
-    if (fstat.isFile()) {
+    if (fstat.isFile()) {  // 如果是文件则返回文件内容
       const mimeType = mime.getType(filePath)
       const total = fstat.size
+      // range处理断点续传
       const { statusCode, start, end } = range(total, req, res)
       res.statusCode = statusCode
       if (statusCode === 416) {
@@ -50,12 +58,13 @@ const server = http.createServer(async (req, res) => {
       } else {
         rs = fs.createReadStream(filePath)
       }
+      // 特定格式文件进行压缩
       if (mimeType.startsWith('text') || mimeType.startsWith('application')) {
         rs = compress(rs, req, res)
       }
       res.setHeader('content-type', `${mimeType};charset=UTF-8`)
       rs.pipe(res)
-    } else if (fstat.isDirectory()) {
+    } else if (fstat.isDirectory()) {  // 如果是目录则返回目录中的文件列表
       res.setHeader('content-type', 'text/html;charset=UTF-8')
       const files = await readdir(filePath)
       res.end(dirTemplate({
