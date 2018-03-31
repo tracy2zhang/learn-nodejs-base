@@ -15,6 +15,10 @@ const argv = yargs
     alias: 'dir',
     describe: 'root path',
     default: process.cwd()
+  }).option('o', {
+    alias: 'open',
+    describe: 'open browser automatically',
+    default: false
   })
   .version()
   .alias('v', 'version')

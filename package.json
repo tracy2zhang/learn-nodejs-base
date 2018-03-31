@@ -3,9 +3,16 @@
   "version": "1.0.1",
   "main": "server/server.js",
   "bin": {
-    "anydoor": "bin/anyserve"
+    "anyserve": "bin/anyserve"
   },
   "license": "MIT",
+  "keywords": [
+    "静态服务器"
+  ],
+  "author": {
+    "name": "utopia_one",
+    "email": "601554019@qq.com"
+  },
   "dependencies": {
     "chalk": "^2.3.2",
     "etag": "^1.8.1",

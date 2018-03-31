@@ -2,7 +2,7 @@ module.exports = {
   port: 3000,
   host: '0.0.0.0',
   staticPath: '../',
-  cache:{
+  cache: {
     maxAge: 600,
     expires: true,
     cacheControl: true,

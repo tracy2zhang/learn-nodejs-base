@@ -12,7 +12,7 @@ const defaultConfig = require('./config')
 const { compress } = require('./compress')
 const { range } = require('./range')
 const { hitCache } = require('./cache')
-const { open } = require('./open')
+const { opn } = require('./open')
 
 function getIpAddress (network) {
   for (let key of Object.keys(network)) {
@@ -35,7 +35,7 @@ class Server {
     this.config = Object.assign({}, defaultConfig, config)
   }
   start () {
-    const { port, host, staticPath } = this.config
+    const { port, host, staticPath, open } = this.config
     const server = http.createServer(async (req, res) => {
       try {
         const url = req.url
@@ -93,7 +93,9 @@ class Server {
     server.listen(port, host, () => {
       const addr = `http://${host}:${port}`
       console.info(chalk.green(`Server is running at ${addr}, ip: ${hostname}`))
-      open(addr)
+      if (open) {
+        opn(addr)
+      }
     })
   }
 }
