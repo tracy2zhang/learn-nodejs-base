@@ -50,7 +50,7 @@ class Server {
         }
         res.statusCode = 200
         if (fstat.isFile()) { // 如果是文件则返回文件内容
-          const mimeType = mime.getType(filePath)
+          const mimeType = mime.getType(filePath) || ''
           const total = fstat.size
           // range处理断点续传
           const { statusCode, start, end } = range(total, req, res)
